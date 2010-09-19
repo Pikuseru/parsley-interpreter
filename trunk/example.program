@@ -1,0 +1,113 @@
+;;;; main method
+
+proc main
+
+	;;;; this flag is cleared when the program is interrupted externally
+	
+	push true
+	gave #global_interrupt_flag
+
+	push "calling ..."
+	echo
+	call square #num: 9
+	echo
+	push "called!"
+	
+	push "call..."
+	echo
+	call add_two_then_divide_by_num_3 #num_1: 30 #num_2: 70 #num_3: 2
+	echo
+	push "called!"
+	echo
+	
+	push 120
+	save #variable
+	push 80
+	push #variable
+	add
+	neg
+	echo
+	
+	call proc_1
+	
+	call count_up_to #value: 32767
+	
+	echo "we have done counting!"
+	
+	;;;; wait until the global flag has been cleared 
+	
+	labl waiting
+	gush #global_interrupt_flag
+	jint finished
+	echo "waiting...."
+	jump waiting
+	labl finished
+	
+done
+
+;;;; interrupt handler
+
+proc interrupt_me_and_halt_with #message:
+	echo "we were interrupted with the message:"
+	echo #message
+	
+	;;;; clear the global flag
+	
+	push false
+	gave #global_interrupt_flag
+done
+
+;;;; performs the square of a number
+
+proc square #num:
+	push #num
+	dup
+	mul
+done
+
+;;;; performs another calculation
+
+proc add_two_then_divide_by_num_3 #num_1: #num_2: #num_3:
+	push #num_1
+	push #num_2
+	add
+	save #sum
+	push #num_3
+	push #sum
+	div
+done
+
+;;;;
+
+proc proc_1
+	push "proc_1!"
+	echo
+	call proc_2
+done
+proc proc_2
+	push "proc_2!"
+	echo
+	call proc_3
+done
+proc proc_3
+	push "proc_3!"
+	echo
+done
+
+;;;; counting
+
+proc count_up_to #value:
+	push 1
+	save #counter
+	labl label_1
+	push 1
+	push #counter
+	add
+	save #counter
+	push #counter
+	echo
+	push #value
+	eq
+	;;;; jump-if-not-true
+	jint label_1
+done

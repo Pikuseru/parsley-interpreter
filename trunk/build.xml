@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="package" name="Parsley">
+    <target name="startup">
+        <property name="sources.path" value="src"/>     
+        <property name="classes.path" value="build"/>
+        <property name="package.path" value="dist"/>
+        <property name="package.file" value="Parsley.jar"/>    
+    </target>
+    <target name="cleanup" depends="startup">
+        <echo>cleaning...</echo>
+        <delete dir="${classes.path}"/>
+        <delete dir="${package.path}"/>
+    </target>
+    <target name="compile" depends="cleanup">
+        <echo>compiling...</echo>
+        <mkdir dir="${classes.path}"/>
+        <javac srcdir="${sources.path}" optimize="yes" debug="yes" destdir="${classes.path}">
+        </javac>
+    </target>
+    <target name="package" depends="compile">
+        <echo>packaging...</echo>
+        <mkdir dir="${package.path}"/>
+        <jar basedir="${classes.path}" compress="yes" destfile="${package.path}/${package.file}"/>
+    </target>
+    <target name="test" depends="package">
+        <echo>testing...</echo>
+        <java classname="parsley.test.Example" classpath="${package.path}/${package.file}" fork="true">
+            <arg value="example.program"/>
+        </java>
+    </target>   
+</project>
